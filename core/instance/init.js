@@ -15,8 +15,7 @@ export  function initMixIn (Due) {
 
         // 初始化data
         if(options && options.data) { //首先options和options得存在
-            // vm._data = constructProxy(vm, options.data, '');
-
+            vm._data = constructProxy(vm, options.data, '');
             
         }
     }

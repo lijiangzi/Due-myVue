@@ -15,18 +15,20 @@
     </div>
 
     <script type="module">
-        console.log(1111);
+        // console.log(1111);
         import Due from './core/index.js';
 
         window.test = new Due({ //因为我们这里的script是module，所以这里的变量是局部的。因此我们想要定义全局变量使用window.xxx就好了
             el: 'test', //为了方便我们这里就只允许id，所以#就不写了
             data: {
-                content: 'ljz',
-                description: 'ljz say hello',
-                obj: {
-                    x: 1,
-                    y: 2
-                }
+                // content: 'ljz',
+                // description: 'ljz say hello',
+                // obj: {
+                //     x: 1,
+                //     y: 2
+                // },
+                list: [{name: 'ljz', age: 18}, {name: 'lx', age: 19}],
+                list2: [1,2,3,4]
             }
         }); 
     </script>

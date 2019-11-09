@@ -9,7 +9,13 @@
 </head>
 <body>
     <div id="app">
-        {{name}}
+        {{name}}<br/>
+        {{list[0].age}}
+        <ul>
+            <li v-for='item in list2'>
+                {{item}}
+            </li>
+        </ul>
     </div>
 
     <div id="test2"></div>
@@ -18,12 +24,16 @@
         var vm = new Vue({
             el: '#app',
             data: {
-                name: 'ljz'
+                name: 'ljz',
+                obj: {name: 'ljz'},
+                list: [{name: 'ljz', age: 18}, {name: 'lx', age: 19}],
+                list2: [1,2,3,4]
             }
         })
 
         var vm2 = new Vue({
-            el: '#test2'
+            el: '#test2',
+            
         })
     </script>
 </body>
