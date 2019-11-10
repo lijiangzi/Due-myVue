@@ -1,12 +1,12 @@
 // 给Due添加初始化方法
 //我们要做的有： 初始化data  初始化created方法  初始化methods   初始化computed  初始化el并挂载
 
-import Due from './index.js';
 import constructProxy from './proxy.js';
+import mount from './mount.js';
 
 let uid = 0; //每个vm实例都有一个独一无二的id值
 
-export  function initMixIn (Due) {
+export  function initMixin (Due) {
     Due.prototype._init = function (options) { //定义在Due构造函数的原型上，这样我们在new Due()时，this._init()就能被执行。
 
         const vm = this; //vm（visual model虚拟模块）指向Due实例
@@ -17,6 +17,11 @@ export  function initMixIn (Due) {
         if(options && options.data) { //首先options和options得存在
             vm._data = constructProxy(vm, options.data, '');
             
+        }
+        // 创建虚拟DOM
+        if(options && options.el) {
+            var rootDom = document.getElementById(options.el);  //真实的dom节点
+            mount(vm, rootDom)
         }
     }
 }

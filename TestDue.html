@@ -8,10 +8,19 @@
 </head>
 <body>
     <div id="test">
-        你好， {{content}}<br/>
-        <span>
+        你好， {{content}}, {{description}}
+        <h1>
             {{description}}
-        </span>
+        </h1>
+        <h2>
+            {{content}}的wife是{{wife}}
+        </h2>
+        <h2>
+            我有{{obj.money}}万
+        </h2>
+        <h2>
+            我的好朋友是：{{list[0].age}}
+        </h2>
     </div>
 
     <script type="module">
@@ -21,14 +30,13 @@
         window.test = new Due({ //因为我们这里的script是module，所以这里的变量是局部的。因此我们想要定义全局变量使用window.xxx就好了
             el: 'test', //为了方便我们这里就只允许id，所以#就不写了
             data: {
-                // content: 'ljz',
-                // description: 'ljz say hello',
-                // obj: {
-                //     x: 1,
-                //     y: 2
-                // },
-                list: [{name: 'ljz', age: 18}, {name: 'lx', age: 19}],
-                list2: [1,2,3,4]
+                content: 'ljz',
+                description: 'ljz真帅',
+                wife: 'lx',
+                obj: {
+                    money: 100000
+                },
+                list: [{name:'lj', age: 18}]
             }
         }); 
     </script>

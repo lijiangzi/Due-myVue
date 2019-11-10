@@ -1,3 +1,5 @@
+import { renderData } from "./render.js";
+
 // 实现data代理
 // 我们要知道哪个属性别修改了，我们才能对页面上的内容进行更新；
 // 所以我们必须先能够捕获修改的这个事件；但是我们知道有鼠标事件、有键盘事件等，但是还没有听说JS有监听对象改变的是事件
@@ -15,8 +17,10 @@ function constructObjectProxy(vm, obj, namespace) {
                 return obj[prop]
             },
             set(value) {
-                console.log(getNameSpace(namespace, prop));
+                // console.log(getNameSpace(namespace, prop)); //这是我们最后要做的双向绑定
                 obj[prop] = value;
+                renderData(vm, getNameSpace(namespace, prop))
+
             }
         })
 
@@ -28,8 +32,9 @@ function constructObjectProxy(vm, obj, namespace) {
                 return obj[prop]
             },
             set(value) {
-                console.log(getNameSpace(namespace, prop));
+                // console.log(getNameSpace(namespace, prop));
                 obj[prop] = value;
+                renderData(vm, getNameSpace(namespace, prop))
             }
         })
         //但是注意，如果obj[prop]也是一个对象，那么仅靠上述的步骤是无法监听子对象的变化的。因此我们要继续进行代理，即递归
@@ -72,7 +77,9 @@ function defArrayFunc(obj, func, namespace, vm) { //代理数组方法;要求每
             let original = arrProto[func]; //实际上还是数组原型的方法，只不过我们要增加额外的操作，
             const result = original.apply(this, arg);
 
-            console.log(getNameSpace(namespace, ''));
+            // console.log(getNameSpace(namespace, ''));
+            renderData(vm, getNameSpace(namespace, prop))
+
             return result
         }
     })
@@ -122,15 +129,14 @@ export default function constructProxy(vm, obj, namespace) { //vm表示Due实例
     if (obj instanceof Array) {  //当data数据中又有子对象时并且是数组，进行递归处理时，就会进入到这里
         var len = obj.length;  //预存数组的长度
         proxyObj = new Array(len);  //创建一个代理新数组
-        console.log(proxyObj);
-        var proxyArrObj = [];
+        // console.log(proxyObj);
+        // var proxyArrObj = [];
         for (var i = 0; i < len; i++) {
-            proxyArrObj[i] = constructProxy(vm, obj[i], namespace) //生成一个相应的代理数组
+            proxyObj[i] = constructProxy(vm, obj[i], namespace) //生成一个相应的代理数组
         }
-        console.log(proxyArrObj);
         proxyObj = proxyArr(vm, obj, namespace)
 
-        console.log(proxyObj);
+        // console.log(proxyObj);
     } else if (obj instanceof Object) { //监听的data对象一开始自然那是一个数据对象
         proxyObj = constructObjectProxy(vm, obj, namespace)
     } 
@@ -140,5 +146,5 @@ export default function constructProxy(vm, obj, namespace) { //vm表示Due实例
 
     return proxyObj;
 
-
 }
+

@@ -1,10 +1,14 @@
 // 真正的Due
 
-import {initMixIn} from './init.js' //混入一个初始化方法
+import {initMixin} from './init.js' //混入一个初始化方法
+import {renderMixin} from './render.js' //混入一个render方法
+
 
 function Due (options) {
-    this._init(options)
+    this._init(options);
+    this.render()
 }
 
-initMixIn(Due) //初始化Due
+initMixin(Due) //初始化Due
+renderMixin(Due)
 export default Due;
