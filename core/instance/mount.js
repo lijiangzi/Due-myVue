@@ -2,11 +2,12 @@
 //具体的挂载过程需要一些具体的算法，比如遍历DOM节点然后变成一个虚拟DOM树
 import VNode from '../vdom/vnode.js'
 import { prepareRender, getTemplate2Vnode, getVnode2Template } from './render.js';
+import vmodel from './grammar/vmodel.js';
 
 
 //下面的initMount方法完全是为了实现，在vue中，可以先不挂载el，vue对象创建之后，再通过vm.$mount(el)进行挂载。
 //不是什么很高大上的知识点
-export function initMount () {  
+export function initMount() {
     Due.prototype.$mount = function (el) {
         let vm = this;
         let rootDom = document.getElementById(el);
@@ -16,7 +17,7 @@ export function initMount () {
 }
 
 export default function mount(vm, elm) { //vm实例，elm为真实DOM节点
-    console.log('开始挂载'); 
+    console.log('开始挂载');
     vm._vnode = constructVNode(vm, elm, null) //根节点没有父级节点，所以我们传入null
 
     //进行预备渲染，什么意思呢？因为data中的数据，可能不止一个地方用到了即{{data}}，
@@ -24,11 +25,13 @@ export default function mount(vm, elm) { //vm实例，elm为真实DOM节点
     //因此我们要建立渲染索引，通过模板找vnode，通过vnode找模板。这就是预备渲染要做的事情。
     //你会发现框架的底层都是在围绕着各种算法。
     prepareRender(vm, vm._vnode)
-    console.log('template2vnode: ',getTemplate2Vnode());
-    console.log('vnode2template: ',getVnode2Template());
+    console.log('template2vnode: ', getTemplate2Vnode());
+    console.log('vnode2template: ', getVnode2Template());
 }
 
-function constructVNode (vm, elm, parent) {
+function constructVNode(vm, elm, parent) {
+    analysisAttr(vm, elm, parent);
+
     //建立虚拟DOM，需要用到算法： 深度优先搜索
 
     let vnode = null;  //要创建返回的vnode
@@ -45,10 +48,10 @@ function constructVNode (vm, elm, parent) {
     let childs = vnode.elm.childNodes; //原生DOm的方法,获取所有的子节点
     // console.log(childs);
 
-    for (var i = 0; i < childs.length; i ++ ) {
+    for (var i = 0; i < childs.length; i++) {
         //递归，调用的是constructVNode方法本身，这就是深度优先搜索，自己有多少个孩子，我就循环遍历多少遍。
         let childNodes = constructVNode(vm, childs[i], vnode);
-        if(childNodes instanceof VNode) { //返回单一节点的时候
+        if (childNodes instanceof VNode) { //返回单一节点的时候
             vnode.children.push(childNodes)
         } else { //返回节点数组的时候，后面我们使用v-for的时候会用到
             vnode.children = vnode.childNodes.concat(childNodes)
@@ -59,10 +62,21 @@ function constructVNode (vm, elm, parent) {
 }
 
 
-function getNodeText (elm) {
-    if(elm.nodeType == 3) {
+function getNodeText(elm) {
+    if (elm.nodeType == 3) {
         return elm.nodeValue;
     } else {
         return ''
+    }
+}
+
+function analysisAttr(vm, elm, parent) {
+    if (elm.nodeType == 1) {
+        let attrNames = elm.getAttributeNames();
+
+        if (attrNames.indexOf('v-model') > -1) {
+            vmodel(vm, elm, elm.getAttribute('v-model'))
+        }
+
     }
 }

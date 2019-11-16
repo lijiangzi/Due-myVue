@@ -8,7 +8,7 @@ export function prepareRender(vm, vnode) {
     if (vnode == null) {
         return
     }
-
+    analysisAttr(vm, vnode)
     if (vnode.nodeType == 3) { //表示是一个文本节点
         analysisTemplateString(vnode)
     }
@@ -100,7 +100,7 @@ export function renderNode(vm, vnode) { //将模板变量渲染成真正的数�
                 let templateValue = getTemplateValue([vm._data, vm.env], templates[i]);
                 // console.log(templateValue);
                 // 拿出了它的值，我们要来替换：
-                if(templateValue) {
+                if (templateValue) {
                     result = result.replace('{{' + templates[i] + '}}', templateValue)
                 }
 
@@ -108,7 +108,20 @@ export function renderNode(vm, vnode) { //将模板变量渲染成真正的数�
             }
         }
 
-    } else {
+    } else if (vnode.nodeType == 1 && vnode.tag == "INPUT") {
+        let templates = vnode2Template.get(vnode);  //一般input只会绑定一个v-model模板变量
+
+        if (templates) {
+            for(let i = 0; i < templates.length; i ++) {
+                let templateValue = getTemplateValue([vm._data, vm.env], templates[i])
+    
+                if (templateValue) {
+                    vnode.elm.value = templateValue;
+                }
+            }
+        }
+    }
+    else {
         for (let i = 0; i < vnode.children.length; i++) {
             renderNode(vm, vnode.children[i])
         }
@@ -127,13 +140,24 @@ function getTemplateValue(objs, templateName) {
     return null;
 }
 
-export function renderData (vm, data) {
+export function renderData(vm, data) {
     let vnodes = template2Vnode.get(data)
 
-    if(vnodes) {
-        for (let i = 0; i < vnodes.length; i ++) {
-            console.log(vnodes[i]);
+    if (vnodes) {
+        for (let i = 0; i < vnodes.length; i++) {
+
             renderNode(vm, vnodes[i])
         }
+    }
+}
+
+function analysisAttr(vm, vnode) {
+    if (vnode.nodeType != 1) {
+        return;
+    }
+    let attrNames = vnode.elm.getAttributeNames();
+    if (attrNames.indexOf('v-model') > -1) {
+        setTemplate2Vnode(vnode.elm.getAttribute('v-model'), vnode);
+        setVnode2Template(vnode.elm.getAttribute('v-model'), vnode);
     }
 }

@@ -21,6 +21,7 @@
         <h2>
             我的好朋友是：{{list[0].age}}
         </h2>
+        <input type="text" v-model='obj.money'>
     </div>
 
     <script type="module">
@@ -36,6 +37,7 @@
                 obj: {
                     money: 100000
                 },
+                money: 100,
                 list: [{name:'lj', age: 18}]
             }
         }); 
