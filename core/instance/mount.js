@@ -3,6 +3,8 @@
 import VNode from '../vdom/vnode.js'
 import { prepareRender, getTemplate2Vnode, getVnode2Template } from './render.js';
 import vmodel from './grammar/vmodel.js';
+import vForInit from './grammar/vfor.js';
+import { mergeAttr } from '../util/ObjectUtil.js';
 
 
 //下面的initMount方法完全是为了实现，在vue中，可以先不挂载el，vue对象创建之后，再通过vm.$mount(el)进行挂载。
@@ -30,20 +32,34 @@ export default function mount(vm, elm) { //vm实例，elm为真实DOM节点
 }
 
 function constructVNode(vm, elm, parent) {
-    analysisAttr(vm, elm, parent);
+
 
     //建立虚拟DOM，需要用到算法： 深度优先搜索
 
-    let vnode = null;  //要创建返回的vnode
-    let children = [];
-    let text = getNodeText(elm); //因为我们也不确定节点当中有没有文本内容，所以借用一个方法判断一下
-    //文本和文本节点不是一个概念。只有文本节点才有文本，标签节点只有文本节点子节点，没有文本
-    //是文本节点即nodeType为3，我们则获取它的文本内容，否则返回空串''
-    let data = null; //暂时用不到
-    let nodeType = elm.nodeType;
-    let tag = elm.nodeName;
+    let vnode = analysisAttr(vm, elm, parent);  //要创建返回的vnode,如果有v-for这样的属性，就返回相关的虚拟DOM
+    //如果没有v-for指令，那么上面的vnode就是vnode，我们就进行后续的正常的节点创建
+    if (vnode == null) {
+        let children = [];
+        let text = getNodeText(elm); //因为我们也不确定节点当中有没有文本内容，所以借用一个方法判断一下
+        //文本和文本节点不是一个概念。只有文本节点才有文本，标签节点只有文本节点子节点，没有文本
+        //是文本节点即nodeType为3，我们则获取它的文本内容，否则返回空串''
+        let data = null; //暂时用不到
+        let nodeType = elm.nodeType;
+        let tag = elm.nodeName;
 
-    vnode = new VNode(tag, elm, children, text, data, parent, nodeType);
+        vnode = new VNode(tag, elm, children, text, data, parent, nodeType);
+
+        //然后我们增加：
+        if (elm.nodeType == 1 && elm.getAttribute('env')) {
+            console.log(vnode);
+            vnode.env = mergeAttr(vnode.env, JSON.parse(elm.getAttribute('env')));  //它本身的参数加上标签上的参数，比如说 <li v-for=xxx> <p v-for=xx> v-for里又有v-for，因此p标签里的属性既能访问到p身上的数据，又能访问到上一级的属性。因此我们要来一个env的合并。
+            //我们在utils里定义mergeAttr方法
+            // console.log(vnode.env);
+        } else {
+            vnode.env = mergeAttr(vnode.env, parent ? parent.env : '')
+        }
+    }
+
 
     let childs = vnode.elm.childNodes; //原生DOm的方法,获取所有的子节点
     // console.log(childs);
@@ -76,6 +92,10 @@ function analysisAttr(vm, elm, parent) {
 
         if (attrNames.indexOf('v-model') > -1) {
             vmodel(vm, elm, elm.getAttribute('v-model'))
+        }
+
+        if (attrNames.indexOf('v-for') > -1) {
+            return vForInit(vm, elm, parent, elm.getAttribute('v-for'))
         }
 
     }

@@ -8,10 +8,11 @@ export function prepareRender(vm, vnode) {
     if (vnode == null) {
         return
     }
-    analysisAttr(vm, vnode)
+
     if (vnode.nodeType == 3) { //表示是一个文本节点
         analysisTemplateString(vnode)
     }
+    analysisAttr(vm, vnode)
     if (vnode.nodeType == 1) { //说明是一个标签节点，那么它可能又有文本节点子节点，因为马上想到递归
         for (let i = 0; i < vnode.children.length; i++) {
             prepareRender(vm, vnode.children[i])
@@ -97,7 +98,7 @@ export function renderNode(vm, vnode) { //将模板变量渲染成真正的数�
             for (let i = 0; i < templates.length; i++) {
                 //我们要找出模板变量对应的data值
                 //注意：重点：{{key}}对应的不只是data对象当中的值，还可以来自于标签，比如 <li v-for='key in list'>{{key}}</li>,那么我们去data去找是不对的，尽管list也是data的值，那么key终究也是存在于data中的，但是我们如果想要在data中找出无疑增加了难度。直接从它的标签属性list找不是更快更方便吗？因此这种情况我们需要预存一下变量，这样vm.env就起作用了。因此我们判断{{key}}的key值还需要在vm.env中找
-                let templateValue = getTemplateValue([vm._data, vm.env], templates[i]);
+                let templateValue = getTemplateValue([vm._data, vnode.env], templates[i]); //注意一定是vnode.env，而不是vm.env
                 // console.log(templateValue);
                 // 拿出了它的值，我们要来替换：
                 if (templateValue) {
@@ -112,9 +113,9 @@ export function renderNode(vm, vnode) { //将模板变量渲染成真正的数�
         let templates = vnode2Template.get(vnode);  //一般input只会绑定一个v-model模板变量
 
         if (templates) {
-            for(let i = 0; i < templates.length; i ++) {
-                let templateValue = getTemplateValue([vm._data, vm.env], templates[i])
-    
+            for (let i = 0; i < templates.length; i++) {
+                let templateValue = getTemplateValue([vm._data, vnode.env], templates[i])  //注意一定是vnode.env，而不是vm.env
+
                 if (templateValue) {
                     vnode.elm.value = templateValue;
                 }
@@ -129,7 +130,8 @@ export function renderNode(vm, vnode) { //将模板变量渲染成真正的数�
 }
 
 function getTemplateValue(objs, templateName) {
-    // console.log(objs);
+    console.log(objs);
+    // console.log(objs[1]);
     for (let i = 0; i < objs.length; i++) {
         // console.log(objs[i]);
         let temp = getValue(objs[i], templateName);
@@ -160,4 +162,5 @@ function analysisAttr(vm, vnode) {
         setTemplate2Vnode(vnode.elm.getAttribute('v-model'), vnode);
         setVnode2Template(vnode.elm.getAttribute('v-model'), vnode);
     }
+   
 }
