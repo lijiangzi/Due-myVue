@@ -30,9 +30,9 @@ function getVirtualNodeData(instructions) {
 }
 
 function analysisInstructions(vm, instructions, elm, parent) {
-    // console.log(elm.innerHTML);
+
     let insSet = getVirtualNodeData(instructions);
-    console.log(insSet);
+    // console.log(insSet);  //值为['key', 'in', 'list']
     let dataSet = getValue(vm._data, insSet[2]);
 
     if (!dataSet) {
@@ -60,7 +60,7 @@ function analysisInstructions(vm, instructions, elm, parent) {
 
         resultSet.push(tempDom);
     }
-    console.log(resultSet);
+    // console.log(resultSet); //最后的resultSet为创建的真实DOM的集合。比如有list有三个元素，那么就为[li, li, li]
     return resultSet;
 }
 

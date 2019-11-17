@@ -12,8 +12,12 @@ export function prepareRender(vm, vnode) {
     if (vnode.nodeType == 3) { //表示是一个文本节点
         analysisTemplateString(vnode)
     }
+    if (vnode.nodeType == 0) {
+        setTemplate2Vnode(vnode.data, vnode);
+        setVnode2Template(vnode.data, vnode)
+    }
     analysisAttr(vm, vnode)
-    if (vnode.nodeType == 1) { //说明是一个标签节点，那么它可能又有文本节点子节点，因为马上想到递归
+    if (vnode.nodeType == 1 || vnode.nodeType == 0) { //说明是一个标签节点，那么它可能又有文本节点子节点，因为马上想到递归
         for (let i = 0; i < vnode.children.length; i++) {
             prepareRender(vm, vnode.children[i])
         }
@@ -130,7 +134,7 @@ export function renderNode(vm, vnode) { //将模板变量渲染成真正的数�
 }
 
 function getTemplateValue(objs, templateName) {
-    console.log(objs);
+    // console.log(objs);
     // console.log(objs[1]);
     for (let i = 0; i < objs.length; i++) {
         // console.log(objs[i]);
@@ -142,7 +146,8 @@ function getTemplateValue(objs, templateName) {
     return null;
 }
 
-export function renderData(vm, data) {
+export function renderData(vm, data) {  //data为template变量即data属性
+
     let vnodes = template2Vnode.get(data)
 
     if (vnodes) {
@@ -163,4 +168,14 @@ function analysisAttr(vm, vnode) {
         setVnode2Template(vnode.elm.getAttribute('v-model'), vnode);
     }
    
+}
+
+export function getVnodeByTemplate (template) {
+
+    return template2Vnode.get(template)
+}
+
+export function clearMap () {
+    template2Vnode.clear();
+    vnode2Template.clear();
 }

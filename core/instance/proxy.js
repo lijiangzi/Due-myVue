@@ -1,4 +1,5 @@
 import { renderData } from "./render.js";
+import { rebuild } from "./mount.js";
 
 // 实现data代理
 // 我们要知道哪个属性别修改了，我们才能对页面上的内容进行更新；
@@ -77,8 +78,8 @@ function defArrayFunc(obj, func, namespace, vm) { //代理数组方法;要求每
             let original = arrProto[func]; //实际上还是数组原型的方法，只不过我们要增加额外的操作，
             const result = original.apply(this, arg);
 
-            // console.log(getNameSpace(namespace, ''));
-            renderData(vm, getNameSpace(namespace, prop))
+            rebuild(vm, getNameSpace(namespace, ''))
+            renderData(vm, getNameSpace(namespace, ''))
 
             return result
         }

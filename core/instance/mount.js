@@ -1,7 +1,7 @@
 //初始化vm并挂载
 //具体的挂载过程需要一些具体的算法，比如遍历DOM节点然后变成一个虚拟DOM树
 import VNode from '../vdom/vnode.js'
-import { prepareRender, getTemplate2Vnode, getVnode2Template } from './render.js';
+import { prepareRender, getTemplate2Vnode, getVnode2Template, getVnodeByTemplate, clearMap } from './render.js';
 import vmodel from './grammar/vmodel.js';
 import vForInit from './grammar/vfor.js';
 import { mergeAttr } from '../util/ObjectUtil.js';
@@ -51,7 +51,7 @@ function constructVNode(vm, elm, parent) {
 
         //然后我们增加：
         if (elm.nodeType == 1 && elm.getAttribute('env')) {
-            console.log(vnode);
+            // console.log(JSON.parse(elm.getAttribute('env')));
             vnode.env = mergeAttr(vnode.env, JSON.parse(elm.getAttribute('env')));  //它本身的参数加上标签上的参数，比如说 <li v-for=xxx> <p v-for=xx> v-for里又有v-for，因此p标签里的属性既能访问到p身上的数据，又能访问到上一级的属性。因此我们要来一个env的合并。
             //我们在utils里定义mergeAttr方法
             // console.log(vnode.env);
@@ -61,7 +61,7 @@ function constructVNode(vm, elm, parent) {
     }
 
 
-    let childs = vnode.elm.childNodes; //原生DOm的方法,获取所有的子节点
+    let childs = vnode.nodeType == 0 ? vnode.parent.elm.childNodes : vnode.elm.childNodes; //原生DOm的方法,获取所有的子节点
     // console.log(childs);
 
     for (var i = 0; i < childs.length; i++) {
@@ -98,5 +98,25 @@ function analysisAttr(vm, elm, parent) {
             return vForInit(vm, elm, parent, elm.getAttribute('v-for'))
         }
 
+    }
+}
+
+//当数组更新，再次构建
+
+export function rebuild (vm, template) {
+    // console.log(template);
+    let virtualNode = getVnodeByTemplate(template);
+    // console.log(virtualNode);
+    for (let i = 0; i < virtualNode.length; i ++) {
+        virtualNode[i].parent.elm.innerHTML = '';  //相当于把原来list生成的节点干掉
+        virtualNode[i].parent.elm.appendChild(virtualNode[i].elm);
+
+        let result = constructVNode(vm, virtualNode[i].elm, virtualNode[i].parent);
+        console.log(result);
+        virtualNode[i].parent.children = [result];
+
+        clearMap(); //之前的map索引已经有问题了，因此我们重新建立映射。
+
+        prepareRender(vm, vm._vnode) //注意这里的性能是非常高的，因为预备渲染不会动真实的DOM。这里prepareRender里又要增加一步对虚拟节点的操作即我们之前把虚拟节点的nodeType设为了0
     }
 }

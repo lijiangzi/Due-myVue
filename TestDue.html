@@ -14,17 +14,17 @@
         </h1>
         <h2>
             {{content}}的wife是{{wife}}
-        </h2>
+        </h2> -->
         <h2>
             我有{{obj.money}}万
         </h2>
-        <h2>
+        <!-- <h2>
             我的好朋友是：{{list[0].age}}
-        </h2>
-        <input type="text" v-model='obj.money'> -->
+        </h2> -->
+        <!-- <input type="text" v-model='obj.money'> -->
 
-        <ul v-for="(key,index) in list">
-            <li>姓名：{{key.name}}, 年龄{{key.age}}</li>
+        <ul>
+            <li  v-for="(key,index) in list">姓名：{{key.name}}, 年龄{{key.age}}</li>
         </ul>
     </div>
 
@@ -42,7 +42,7 @@
                     money: 100000
                 },
                 money: 100,
-                list: [{name:'lj', age: 18}, {name: 'lx', age: 19}, {name: 'cx', age: 20}]
+                list: [{name:'lj', age: 18}, {name: 'lx', age: 19}, {name: 'cx', age: 21}]
             }
         }); 
     </script>
