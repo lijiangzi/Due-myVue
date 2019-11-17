@@ -5,6 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
+    <style>
+        .red{
+            color: red;
+
+        }
+        .blue{
+            color: blue;
+        }
+    
+    </style>
 </head>
 <body>
     <div id="test">
@@ -26,6 +36,11 @@
         <ul>
             <li  v-for="(key,index) in list">姓名：{{key.name}}, 年龄{{key.age}}</li>
         </ul>
+        <img src="a.jpg" alt="" width="100px">
+        <img v-bind:src="imgSrc" width="100px">
+        <br>
+        <span v-bind:class='haha'>我的小欣欣</span>
+        <span v-bind:class='{red: obj.money < 2, blue: obj.money > 2}'>我的小可爱</span>
     </div>
 
     <script type="module">
@@ -42,7 +57,9 @@
                     money: 100000
                 },
                 money: 100,
-                list: [{name:'lj', age: 18}, {name: 'lx', age: 19}, {name: 'cx', age: 21}]
+                list: [{name:'lj', age: 18}, {name: 'lx', age: 19}, {name: 'cx', age: 21}],
+                imgSrc: 'a.jpg',
+                haha: 'red'
             }
         }); 
     </script>

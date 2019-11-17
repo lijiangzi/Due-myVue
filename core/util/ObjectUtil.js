@@ -42,6 +42,7 @@ export function setValue (obj, data, value) { //哪个对象，哪个属性，�
     } 
 }
 
+//
 export function mergeAttr (obj1, obj2) {
     if (obj1 == null) {
         return clone(obj2);
@@ -92,6 +93,14 @@ function cloneArray (obj) {
     for (var i = 0; i < obj.length; i ++) {
         result[i] = clone(obj[i])
     }
+
+    return result;
+}
+
+//
+export function getEnvAttr (vm, vnode) {
+    let result = mergeAttr(vm._data, vnode.env);
+    result = mergeAttr(result, vm._computed);
 
     return result;
 }
