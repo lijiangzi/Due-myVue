@@ -1,5 +1,6 @@
 import { renderData } from "./render.js";
 import { rebuild } from "./mount.js";
+import { getValue } from "../util/ObjectUtil.js";
 
 // 实现data代理
 // 我们要知道哪个属性别修改了，我们才能对页面上的内容进行更新；
@@ -20,8 +21,14 @@ function constructObjectProxy(vm, obj, namespace) {
             set(value) {
                 // console.log(getNameSpace(namespace, prop)); //这是我们最后要做的双向绑定
                 obj[prop] = value;
-                renderData(vm, getNameSpace(namespace, prop))
-
+                let val = getValue(vm._data, getNameSpace(namespace, prop));
+                if (val instanceof Array) {
+                    rebuild(vm, getNameSpace(namespace, prop));
+                    renderData(vm, getNameSpace(namespace,prop))
+                } else{
+                    renderData(vm, getNameSpace(namespace, prop))
+                }
+               
             }
         })
 
@@ -35,7 +42,13 @@ function constructObjectProxy(vm, obj, namespace) {
             set(value) {
                 // console.log(getNameSpace(namespace, prop));
                 obj[prop] = value;
-                renderData(vm, getNameSpace(namespace, prop))
+                let val = getValue(vm._data, getNameSpace(namespace, prop));
+                if (val instanceof Array) {
+                    rebuild(vm, getNameSpace(namespace, prop));
+                    renderData(vm, getNameSpace(namespace,prop))
+                } else{
+                    renderData(vm, getNameSpace(namespace, prop))
+                }
             }
         })
         //但是注意，如果obj[prop]也是一个对象，那么仅靠上述的步骤是无法监听子对象的变化的。因此我们要继续进行代理，即递归
