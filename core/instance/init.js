@@ -18,10 +18,25 @@ export  function initMixin (Due) {
             vm._data = constructProxy(vm, options.data, '');
             
         }
+         //初始化methods
+         if (options && options.methods) {
+            console.log(222);
+            vm._methods = options.methods;
+            console.log(vm._methods);
+            for (let prop in options.methods) {
+                vm[prop] = options.methods[prop]; //再把所有的方法作为vm的属性。vue当中也是这么做的。
+            }
+        }
+
+        //初始化created
+        
+
         // 创建虚拟DOM
         if(options && options.el) {
             var rootDom = document.getElementById(options.el);  //真实的dom节点
             mount(vm, rootDom)
         }
+
+       
     }
 }

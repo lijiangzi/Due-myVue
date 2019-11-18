@@ -31,7 +31,7 @@
         <!-- <h2>
             我的好朋友是：{{list[0].age}}
         </h2> -->
-        <!-- <input type="text" v-model='obj.money'> -->
+        <input type="text" v-model='obj.money' v-on:keydown="enter">
 
         <ul>
             <li  v-for="(key,index) in list">姓名：{{key.name}}, 年龄{{key.age}}</li>
@@ -60,7 +60,17 @@
                 list: [{name:'lj', age: 18}, {name: 'lx', age: 19}, {name: 'cx', age: 21}],
                 imgSrc: 'a.jpg',
                 haha: 'red'
-            }
+            },
+            methods: {
+                enter: function () {
+                    console.log(111);
+                    alert('hello')
+                }
+            },
+            created() {
+                console.log('创建完成啦')
+            },
+
         }); 
     </script>
 </body>

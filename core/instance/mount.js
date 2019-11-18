@@ -6,6 +6,7 @@ import vmodel from './grammar/vmodel.js';
 import vForInit from './grammar/vfor.js';
 import { mergeAttr } from '../util/ObjectUtil.js';
 import { checkVBind } from './grammar/vbind.js';
+import { checkVOn } from './grammar/von.js';
 
 
 //下面的initMount方法完全是为了实现，在vue中，可以先不挂载el，vue对象创建之后，再通过vm.$mount(el)进行挂载。
@@ -61,7 +62,8 @@ function constructVNode(vm, elm, parent) {
         }
     }
 
-    checkVBind(vm, vnode)
+    checkVBind(vm, vnode);
+    checkVOn(vm, vnode);
     let childs = vnode.nodeType == 0 ? vnode.parent.elm.childNodes : vnode.elm.childNodes; //原生DOm的方法,获取所有的子节点
     // console.log(childs);
 

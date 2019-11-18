@@ -12,10 +12,10 @@
 <body>
     <div id="app" class="ljz">
         你好， {{content}}，{{description}}
-        <h1>
+        <h1 v-on:click="aaa">
             {{description}}
         </h1>
-        <h2>
+        <h2 v-on:mouseover="hello">
             {{list[0].name}}
             {{obj.x}}
         </h2>
@@ -33,7 +33,15 @@
                 },
                 list: [{name:'lj', age: 18}]
          
-            }
+            },
+            methods: {
+                hello(){
+                    alert("hello")
+                },
+                aaa(){
+                    console.log('aaa');
+                }
+            },
         })
     </script>
 </body>
